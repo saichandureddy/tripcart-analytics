@@ -1,0 +1,17 @@
+# Python packages for the pipeline code (dbt, loaders, simulator, tests).
+# Installed into a virtualenv on your laptop and into /opt/tripcart-venv in the
+# Airflow image, so both run the same versions.
+
+# dbt: stay on v1. dbt v2 has no Postgres adapter yet and Cosmos doesn't support it.
+dbt-core>=1.10,<2.0
+dbt-postgres>=1.9,<2.0
+
+# Ingestion (milestone 2)
+psycopg[binary]>=3.2,<4
+requests>=2.32,<3
+boto3>=1.35,<2
+Faker>=30,<40
+python-dotenv>=1.0,<2
+
+# Tests
+pytest>=8,<9
