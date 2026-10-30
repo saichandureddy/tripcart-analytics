@@ -49,14 +49,24 @@ in CI, which is the point.
 
 ### 1. One-time setup
 
-1. **Open Docker Desktop** and wait until it says *Engine running*.
-2. In Docker Desktop, go to **Settings → Resources → WSL integration**, turn on
+1. **Install Ubuntu for WSL** if you don't have it yet. Docker Desktop adds
+   its own `docker-desktop` distribution, but that one is only for Docker's
+   internal use, not for working in. In PowerShell, run:
+   ```powershell
+   wsl --list --verbose          # is "Ubuntu" listed?
+   wsl --install -d Ubuntu       # if not, install it
+   wsl --set-default Ubuntu      # make it the default instead of docker-desktop
+   ```
+   The first time Ubuntu opens, it asks you to pick a Linux username and
+   password. The password is for `sudo`, so remember it.
+2. **Open Docker Desktop** and wait until it says *Engine running*.
+3. In Docker Desktop, go to **Settings → Resources → WSL integration**, turn on
    your Ubuntu distribution, and click *Apply & restart*. This lets the
    `docker` command work inside WSL.
-3. Still in Settings, check **Resources → Advanced** (or your `.wslconfig`)
+4. Still in Settings, check **Resources → Advanced** (or your `.wslconfig`)
    gives WSL at least **4 GB of memory**. The whole stack uses about 1.2 GB
    when idle, and Airflow needs headroom when it runs tasks.
-4. Open the **Ubuntu** app from the Start menu (this is your WSL terminal) and
+5. Open the **Ubuntu** app from the Start menu (this is your WSL terminal) and
    install the two small tools the project uses:
    ```bash
    sudo apt update && sudo apt install -y make git
@@ -142,7 +152,8 @@ Run `make` on its own to list these.
 ## Troubleshooting
 
 - **`docker: command not found` in WSL:** Docker Desktop isn't running, or WSL
-  integration is off for your distribution (step 1.2).
+  integration is off for Ubuntu (step 1.3), or the
+  terminal you opened is not Ubuntu (step 1.1).
 - **`port is already allocated`:** something else on your laptop uses that
   port, often a locally installed Postgres. Change the port in `.env` (for
   example `DWH_DB_PORT=5435`) and run `make up` again.
@@ -151,7 +162,7 @@ Run `make` on its own to list these.
 - **You changed a password in `.env` after the first start:** Postgres only
   reads its password when the volume is first created. Run `make clean`, then
   `make up`. This deletes the data, which is fine at this stage.
-- **Airflow is slow or containers get killed:** give WSL more memory (step 1.3).
+- **Airflow is slow or containers get killed:** give WSL more memory (step 1.4).
 
 ## Repo layout
 
