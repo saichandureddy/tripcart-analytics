@@ -1,0 +1,5 @@
+# Keep Linux line endings in the repo, even when edited on Windows.
+# Shell scripts and SQL with Windows (CRLF) endings break inside the containers.
+* text=auto eol=lf
+*.pbix binary
+*.png binary
