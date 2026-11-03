@@ -6,8 +6,9 @@ Data is extracted from an operational database, website clickstream files and
 a currency API, loaded into a Postgres warehouse, modelled with dbt into a star
 schema, orchestrated with Airflow, and served to Power BI.
 
-> **Status:** milestone 1 of 7, the local platform. The pipeline code arrives
-> in later milestones (see [Roadmap](#roadmap)).
+> **Status:** milestone 2 of 7. The platform runs, the simulator generates
+> TripCart's data, and three loaders land it in the warehouse's `raw` schema.
+> dbt models arrive in milestone 3 (see [Roadmap](#roadmap)).
 
 ## Architecture
 
@@ -134,6 +135,56 @@ To connect a SQL client (DBeaver, pgAdmin, or later Power BI) to the
 warehouse, use host `localhost`, port `5434`, and the `DWH_DB_*` values from
 `.env`.
 
+## Run the pipeline
+
+With the platform up (`make up`), generate data and load it:
+
+```bash
+make simulate   # TripCart's website "runs": first time, 90 days of history (about a minute)
+make load       # copy app tables, click files and FX rates into the warehouse's raw schema
+make status     # row counts, watermarks and the last loader runs
+```
+
+Run `make load` a second time and `make status` again: the row counts stay
+the same, because every loader only loads what is new. Run `make simulate`
+later in the day and `make load` picks up just the new activity.
+
+### The sources
+
+| Source | What the simulator writes | Loader | Lands in |
+|---|---|---|---|
+| App database (`postgres-app`) | customers, products, bookings, shop orders, order items, payments | `ingestion/app_db_incremental.py`: rows changed since the `updated_at` watermark, upserted on the primary key | `raw.app_*` |
+| Clickstream (MinIO) | JSON Lines files of page views, searches, carts and purchases, one folder per arrival hour | `ingestion/clickstream_files.py`: files not seen before, each loaded in one transaction | `raw.clickstream_events` |
+| FX rates ([Frankfurter](https://frankfurter.dev) API) | nothing, these are real | `ingestion/fx_rates_api.py`: daily EUR rates for USD, GBP and INR, retried with backoff | `raw.fx_rates` |
+
+The loaders' own bookkeeping (runs, watermarks, loaded files, rejected lines)
+lives in the `meta` schema, so `raw` holds only source data.
+
+### Deliberate mess
+
+`raw` is kept exactly as it arrived. The simulator builds in problems for the
+dbt layer to clean up, all tunable in `simulator/config.toml`:
+
+- about 1% of click events are sent twice (same `event_id`)
+- about 3% of click events arrive 1 to 48 hours late, in a later hour's file
+- halfway through the history, click events rename `currency` to `currency_code` (schema drift)
+- emails with stray capitals and spaces, phone numbers that are NULL or empty strings
+- a few customers who signed up twice with differently cased emails
+- order statuses that move from `placed` to `shipped` to `delivered`, sometimes `refunded`, over days
+- bookings that are cancelled and refunded, failed card payments that are retried
+
+### Tests
+
+```bash
+make test
+```
+
+The tests check the guarantees that matter: running a loader twice adds no
+rows, a changed source row is updated rather than duplicated, a new source
+column appears in raw, a failed load leaves nothing half-written, and the FX
+loader survives timeouts. They run against throwaway databases, so your data
+is never touched.
+
 ## Everyday commands
 
 Run `make` on its own to list these.
@@ -147,6 +198,10 @@ Run `make` on its own to list these.
 | `make check` | Test that every service is reachable | `./scripts/check_stack.sh` |
 | `make psql-dwh` | SQL prompt on the warehouse (`\dn` lists schemas, `\q` quits) | `docker compose exec postgres-dwh psql ...` |
 | `make psql-app` | SQL prompt on the app database | `docker compose exec postgres-app psql ...` |
+| `make simulate` | Generate TripCart activity since the last run | `docker compose exec airflow-scheduler python -m simulator` |
+| `make load` | Run the three loaders into `raw` | `docker compose exec airflow-scheduler python -m ingestion all` |
+| `make status` | Row counts, watermarks and recent loader runs | `... python -m ingestion status` |
+| `make test` | Run the tests | `... python -m pytest` |
 | `make clean` | Stop and **delete all data** for a fresh start | `docker compose down -v` |
 
 ## Troubleshooting
@@ -163,6 +218,12 @@ Run `make` on its own to list these.
   reads its password when the volume is first created. Run `make clean`, then
   `make up`. This deletes the data, which is fine at this stage.
 - **Airflow is slow or containers get killed:** give WSL more memory (step 1.4).
+- **`make simulate` says `service "airflow-scheduler" is not running`:** start
+  the platform first with `make up`.
+- **The `fx` loader fails:** it needs internet access to reach
+  api.frankfurter.dev. The other two loaders still run. `make status` and the
+  `error` column of `meta.load_runs` show what went wrong; just run `make load`
+  again later.
 
 ## Repo layout
 
@@ -172,6 +233,11 @@ tripcart-analytics/
 ├── Makefile                  # short commands: make up, make check, ...
 ├── .env.example              # template for .env (the real .env is never committed)
 ├── requirements.txt          # Python packages, shared by your laptop and Airflow
+├── simulator/                # generates TripCart's app data and clickstream files
+│   ├── config.toml           # volumes, behaviour and mess rates
+│   └── reference/            # product catalog
+├── ingestion/                # one loader per source, writing to the raw schema
+├── tests/                    # pytest tests for the loaders and simulator
 ├── airflow/
 │   ├── Dockerfile            # official Airflow image + dbt in its own virtualenv
 │   └── dags/                 # pipeline definitions (DAGs)
@@ -182,9 +248,9 @@ tripcart-analytics/
 
 ## Roadmap
 
-1. **Local platform** (this milestone): Docker Compose with app Postgres,
+1. **Local platform** (done): Docker Compose with app Postgres,
    warehouse Postgres, MinIO and Airflow
-2. Data simulator and Python loaders into the `raw` schema
+2. **Data simulator and Python loaders** into the `raw` schema (this milestone)
 3. dbt staging, intermediate and marts models
 4. Data quality tests, snapshots and incremental models
 5. Airflow DAG running ingestion and dbt through Astronomer Cosmos

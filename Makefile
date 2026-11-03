@@ -3,7 +3,7 @@
 # command yourself (see README).
 
 .DEFAULT_GOAL := help
-.PHONY: help env build up down restart ps logs check psql-app psql-dwh clean
+.PHONY: help env build up down restart ps logs check psql-app psql-dwh clean simulate load status test
 
 help: ## List the available commands
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-10s %s\n", $$1, $$2}'
@@ -36,6 +36,23 @@ psql-app: ## Open a SQL prompt on the app database
 
 psql-dwh: ## Open a SQL prompt on the warehouse
 	docker compose exec postgres-dwh sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+
+# --- Pipeline (milestone 2) ---------------------------------------------------
+# These run inside the Airflow scheduler container, which already has Python
+# and every package from requirements.txt, so nothing extra goes on your laptop.
+PY = docker compose exec -w /opt/tripcart airflow-scheduler /opt/tripcart-venv/bin/python
+
+simulate: ## Generate TripCart activity since the last run (the first run makes 90 days)
+	$(PY) -m simulator
+
+load: ## Run all three loaders into the warehouse's raw schema
+	$(PY) -m ingestion all
+
+status: ## Show row counts in raw, watermarks and the last loader runs
+	$(PY) -m ingestion status
+
+test: ## Run the tests (they use throwaway databases, your data is safe)
+	$(PY) -m pytest -v
 
 clean: ## Stop everything and DELETE all data volumes (fresh start)
 	docker compose down -v --remove-orphans
