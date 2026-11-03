@@ -1,0 +1,48 @@
+sku,product_name,category,brand,list_price_eur
+LUG-001,Cabin Spinner 55cm,Luggage,Wayfarer,129.00
+LUG-002,Check-in Spinner 69cm,Luggage,Wayfarer,169.00
+LUG-003,Large Hardshell 78cm,Luggage,Wayfarer,219.00
+LUG-004,Soft Cabin Trolley,Luggage,Packwell,89.00
+LUG-005,Kids Ride-on Case,Luggage,Packwell,59.00
+LUG-006,Aluminium Carry-on,Luggage,AeroLite,349.00
+BAG-001,Travel Backpack 40L,Bags,Globetrek,99.00
+BAG-002,Daypack 20L,Bags,Globetrek,45.00
+BAG-003,Weekender Duffel,Bags,Nomad & Co,79.00
+BAG-004,Packable Tote,Bags,Nomad & Co,19.00
+BAG-005,Anti-theft Crossbody Bag,Bags,SafeTrip,39.00
+BAG-006,Laptop Sleeve 15in,Bags,Nomad & Co,29.00
+ACC-001,Packing Cubes Set of 4,Travel Accessories,Packwell,25.00
+ACC-002,TSA Combination Lock,Travel Accessories,SafeTrip,12.00
+ACC-003,Luggage Tag Leather,Travel Accessories,Nomad & Co,15.00
+ACC-004,Passport Holder RFID,Travel Accessories,SafeTrip,18.00
+ACC-005,Digital Luggage Scale,Travel Accessories,Packwell,14.00
+ACC-006,Compression Bag Set,Travel Accessories,Packwell,16.00
+ACC-007,Travel Umbrella,Travel Accessories,Globetrek,22.00
+ACC-008,Luggage Strap,Travel Accessories,SafeTrip,9.00
+ELE-001,Universal Travel Adapter,Electronics,VoltGo,29.00
+ELE-002,USB-C Power Bank 20000mAh,Electronics,VoltGo,49.00
+ELE-003,Noise Cancelling Headphones,Electronics,AeroLite,199.00
+ELE-004,Bluetooth Item Tracker,Electronics,VoltGo,32.00
+ELE-005,Compact GaN Charger 65W,Electronics,VoltGo,45.00
+ELE-006,Travel Hair Dryer,Electronics,VoltGo,35.00
+ELE-007,Portable Door Alarm,Electronics,SafeTrip,19.00
+COM-001,Memory Foam Neck Pillow,Comfort,AeroLite,29.00
+COM-002,Silk Sleep Mask,Comfort,Nomad & Co,15.00
+COM-003,Compression Flight Socks,Comfort,AeroLite,17.00
+COM-004,Inflatable Footrest,Comfort,AeroLite,14.00
+COM-005,Travel Blanket,Comfort,Nomad & Co,35.00
+COM-006,Foam Earplugs 10 Pack,Comfort,AeroLite,6.00
+TOI-001,Toiletry Bag Hanging,Toiletries,Packwell,24.00
+TOI-002,Silicone Travel Bottles,Toiletries,Packwell,13.00
+TOI-003,Quick-dry Towel,Toiletries,Globetrek,21.00
+TOI-004,Reef-safe Sunscreen SPF50,Toiletries,Globetrek,15.00
+TOI-005,First Aid Kit,Toiletries,SafeTrip,19.00
+SIM-001,eSIM Europe 10GB 30 days,eSIM & Connectivity,SkyData,19.00
+SIM-002,eSIM Global 5GB 15 days,eSIM & Connectivity,SkyData,29.00
+SIM-003,eSIM USA 20GB 30 days,eSIM & Connectivity,SkyData,25.00
+SIM-004,eSIM Asia 10GB 30 days,eSIM & Connectivity,SkyData,22.00
+SIM-005,Pocket Wi-Fi Rental 7 days,eSIM & Connectivity,SkyData,39.00
+INS-001,Trip Cancellation Cover,Insurance,SafeTrip,35.00
+INS-002,Baggage Cover,Insurance,SafeTrip,12.00
+INS-003,Annual Multi-trip Insurance,Insurance,SafeTrip,129.00
+INS-004,Medical Travel Insurance 14 days,Insurance,SafeTrip,45.00

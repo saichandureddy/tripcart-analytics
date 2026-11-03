@@ -33,9 +33,21 @@ x-airflow-common: &airflow-common
     AIRFLOW_CONN_TRIPCART_DWH: postgresql://${DWH_DB_USER}:${DWH_DB_PASSWORD}@postgres-dwh:5432/${DWH_DB_NAME}
     AIRFLOW_CONN_TRIPCART_MINIO: '{"conn_type": "aws", "login": "${MINIO_ROOT_USER}", "password": "${MINIO_ROOT_PASSWORD}", "extra": {"endpoint_url": "http://minio:9000", "region_name": "us-east-1"}}'
     TRIPCART_MINIO_BUCKET: ${MINIO_BUCKET}
+    # Settings for the simulator and loaders (milestone 2). Inside Docker they
+    # reach the other containers by service name, on the internal ports.
+    TRIPCART_APP_DB_URL: postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@postgres-app:5432/${APP_DB_NAME}
+    TRIPCART_DWH_DB_URL: postgresql://${DWH_DB_USER}:${DWH_DB_PASSWORD}@postgres-dwh:5432/${DWH_DB_NAME}
+    TRIPCART_S3_ENDPOINT: http://minio:9000
+    MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+    MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    MINIO_BUCKET: ${MINIO_BUCKET}
+    PYTHONDONTWRITEBYTECODE: "1"
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - airflow-logs:/opt/airflow/logs
+    # The whole repo, read-only, so `make simulate` / `make load` run the
+    # code you are editing without rebuilding the image.
+    - .:/opt/tripcart:ro
   depends_on: &airflow-common-depends-on
     airflow-db:
       condition: service_healthy

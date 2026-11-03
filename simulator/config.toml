@@ -1,0 +1,46 @@
+# How much activity the simulator generates, and how messy it is.
+# Change a number, run `make simulate`, and the next run uses it.
+
+[volume]
+# On the very first run, generate this many days of history.
+backfill_days = 90
+# Customers that already exist at the start of the history.
+initial_customers = 1500
+new_customers_per_day = 12
+# Trip bookings and shop orders per day, before seasonality.
+bookings_per_day = 40
+orders_per_day = 60
+# Website sessions per day that end without buying anything.
+browse_sessions_per_day = 1000
+
+[behaviour]
+# Share of bookings that are hotel stays; the rest are flights.
+hotel_share = 0.6
+# Booking lead time in days follows a lognormal curve with this median.
+lead_time_median_days = 35
+# Base cancellation chance. Longer lead times and pay_later bookings cancel
+# more often, the pattern seen in public hotel booking data.
+hotel_cancel_rate = 0.25
+flight_cancel_rate = 0.08
+# Share of travellers who buy something in the shop before their trip.
+cross_sell_rate = 0.3
+# Shop orders that are cancelled before shipping, and refunded after delivery.
+order_cancel_rate = 0.02
+order_refund_rate = 0.06
+# Share of card payments that fail once before succeeding.
+payment_failure_rate = 0.03
+# Chance per day that a given customer changes tier, phone or email.
+customer_change_rate = 0.004
+# Chance per day that a product's list price changes.
+price_change_rate = 0.01
+
+[mess]
+# Deliberate data quality problems for the dbt layer to clean up.
+duplicate_event_rate = 0.01      # click events sent twice
+late_event_rate = 0.03           # click events that arrive 1 to 48 hours late
+messy_email_rate = 0.08          # Upper-Case or padded email addresses
+null_phone_rate = 0.15           # missing phone numbers (some as empty strings)
+duplicate_customer_rate = 0.005  # same person signs up again with a differently cased email
+# From this many days into the history, the website's new app version sends
+# `currency_code` instead of `currency` in click events (schema drift).
+schema_drift_after_days = 45

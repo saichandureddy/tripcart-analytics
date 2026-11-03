@@ -1,0 +1,11 @@
+# Settings for the Python tools. No packaging here: the code runs as plain
+# modules (python -m simulator, python -m ingestion).
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The repo is mounted read-only inside Docker, so don't write a cache.
+addopts = "-p no:cacheprovider"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
