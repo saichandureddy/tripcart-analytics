@@ -1,9 +1,10 @@
 """API ingestion: daily exchange rates from Frankfurter -> raw.fx_rates.
 
 Frankfurter (https://frankfurter.dev) is a free, keyless API serving central
-bank reference rates, such as the European Central Bank's. Rates are
-published on working days only, so weekends and holidays have no rows; dbt
-fills those gaps.
+bank reference rates, such as the European Central Bank's. Central banks
+publish on working days only. The v2 API blends several sources and, in the
+first live run, returned a rate for every calendar day; dbt should still
+handle a missing day rather than assume there never is one.
 
 We call its v2 endpoint, which returns one JSON object per rate:
 
