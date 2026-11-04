@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: tripcart_raw        # the name you'll use in source('...', '...')
+    schema: raw               # the real schema in Postgres
+    description: Data exactly as the loaders landed it.
+    tables:
+      - name: app_customers
+        description: Customers copied from the app database. One row per one customer made in the app.
+      - name: app_bookings
+        description: Bookings copied from the app database. One row per booking (flight or hotel) made in the app.
+      - name: app_order_items
+        description: Order Items copied from the app database. One row per one order line item per order made in the app.
+      - name: app_payments
+        description: Payments copied from the app database. One row per one payment transaction made in the app.
+      - name: app_products
+        description: Products copied from the app database. One row per one product description made in the app.
+      - name: app_shop_orders
+        description: Shopping Orders copied from the app database. One row per orders booked with the trip made in the app.
+      - name: clickstream_events
+        description: Clickstreams events copied from the JSON files in MinIO. One row per event log made in the JSON files.
+      - name: fx_rates
+        description: FX rates copied from the Frankfurter API. One row per rate date original currency converted currency codes from the API.
