@@ -1,0 +1,18 @@
+# How dbt connects to the warehouse. dbt looks for this file in the folder
+# named by DBT_PROFILES_DIR, which docker-compose.yml points at this folder.
+#
+# No passwords here: env_var() reads them from the container's environment,
+# which docker compose fills in from your .env file.
+tripcart:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_DWH_HOST', 'postgres-dwh') }}"
+      port: "{{ env_var('DBT_DWH_PORT', '5432') | as_number }}"
+      user: "{{ env_var('DBT_DWH_USER') }}"
+      password: "{{ env_var('DBT_DWH_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_DWH_DBNAME') }}"
+      # The schema dbt builds into when a model doesn't say otherwise.
+      schema: staging
+      threads: 4

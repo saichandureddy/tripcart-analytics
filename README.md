@@ -202,6 +202,7 @@ Run `make` on its own to list these.
 | `make load` | Run the three loaders into `raw` | `docker compose exec airflow-scheduler python -m ingestion all` |
 | `make status` | Row counts, watermarks and recent loader runs | `... python -m ingestion status` |
 | `make test` | Run the tests | `... python -m pytest` |
+| `make dbt cmd=debug` | Run any dbt command (here: check the connection) | `... dbt debug` |
 | `make clean` | Stop and **delete all data** for a fresh start | `docker compose down -v` |
 
 ## Troubleshooting

@@ -42,6 +42,19 @@ x-airflow-common: &airflow-common
     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     MINIO_BUCKET: ${MINIO_BUCKET}
     PYTHONDONTWRITEBYTECODE: "1"
+    # dbt (milestone 3). The project and profiles.yml live in dbt/, which is
+    # mounted read-only, so dbt writes its build output to /tmp instead.
+    DBT_PROFILES_DIR: /opt/tripcart/dbt
+    DBT_PROJECT_DIR: /opt/tripcart/dbt
+    DBT_TARGET_PATH: /tmp/dbt/target
+    DBT_LOG_PATH: /tmp/dbt/logs
+    DBT_PACKAGES_INSTALL_PATH: /tmp/dbt/dbt_packages
+    DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+    DBT_DWH_HOST: postgres-dwh
+    DBT_DWH_PORT: "5432"
+    DBT_DWH_USER: ${DWH_DB_USER}
+    DBT_DWH_PASSWORD: ${DWH_DB_PASSWORD}
+    DBT_DWH_DBNAME: ${DWH_DB_NAME}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - airflow-logs:/opt/airflow/logs

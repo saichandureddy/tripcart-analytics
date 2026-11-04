@@ -3,7 +3,7 @@
 # command yourself (see README).
 
 .DEFAULT_GOAL := help
-.PHONY: help env build up down restart ps logs check psql-app psql-dwh clean simulate load status test
+.PHONY: help env build up down restart ps logs check psql-app psql-dwh clean simulate load status test dbt
 
 help: ## List the available commands
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-10s %s\n", $$1, $$2}'
@@ -53,6 +53,15 @@ status: ## Show row counts in raw, watermarks and the last loader runs
 
 test: ## Run the tests (they use throwaway databases, your data is safe)
 	$(PY) -m pytest -v
+
+# --- dbt (milestone 3) -----------------------------------------------------------
+# dbt also runs inside the scheduler container. Pass the dbt command in cmd=,
+# for example: make dbt cmd=debug   or   make dbt cmd="run --select stg_customers"
+DBT = docker compose exec -w /opt/tripcart/dbt airflow-scheduler /opt/tripcart-venv/bin/dbt
+cmd ?= --help
+
+dbt: ## Run a dbt command, e.g. make dbt cmd=debug
+	$(DBT) $(cmd)
 
 clean: ## Stop everything and DELETE all data volumes (fresh start)
 	docker compose down -v --remove-orphans

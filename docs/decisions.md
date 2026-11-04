@@ -123,3 +123,12 @@ is used; v1 is deprecated.
 container, with the repo mounted read-only at `/opt/tripcart`. That image
 already has every package from `requirements.txt`, so nothing extra is
 installed on the laptop, and in milestone 5 Airflow runs the very same code.
+
+## 17. dbt runs inside the Airflow image too, connected by env vars
+
+`make dbt cmd="..."` runs dbt in the scheduler container from `dbt/`, the same
+dbt that Cosmos will call in milestone 5. `dbt/profiles.yml` holds no
+passwords: it reads `DBT_DWH_*` variables that docker compose fills in from
+`.env`. Because the repo is mounted read-only, dbt writes `target/`, `logs/`
+and installed packages under `/tmp/dbt` inside the container
+(`DBT_TARGET_PATH`, `DBT_LOG_PATH`, `DBT_PACKAGES_INSTALL_PATH`).
