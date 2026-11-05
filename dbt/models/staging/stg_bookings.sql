@@ -19,7 +19,7 @@ renamed as (
     total_amount as total_booking_amount,
     status as booking_status,
     booked_at,
-    cancelled_at as booking_cancelled_at,
+    cancelled_at,
     created_at,
     updated_at,
     _loaded_at,
