@@ -3,3 +3,13 @@ version: '1.0.0'
 config-version: 2
 profile: tripcart
 model-paths: ["models"]
+models:
+  tripcart:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
