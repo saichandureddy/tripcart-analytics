@@ -23,7 +23,7 @@ final as (
     order_items.discount_amount * fx.usd_per_unit as discount_amount_usd,
     ((order_items.quantity*order_items.unit_price) - coalesce(order_items.discount_amount,0)) * fx.usd_per_unit as line_total_usd
     from order_items
-    join orders on
+    left join orders on
     orders.order_id=order_items.order_id
     left join fx
     on fx.rate_date=orders.ordered_at::date
